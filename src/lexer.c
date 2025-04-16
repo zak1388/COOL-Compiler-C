@@ -69,19 +69,22 @@ int coolStringLength(struct Token* t) {
 }
 
 void consume_block_comment(FILE* f) {
-    int comment_level = 1;
+    int comment_level = 0;
     char possible_end[3] = {0};
-    while (comment_level > 0) {
+    do {
         if (fread(possible_end, 1, 2, f) < 2) {
             break;
         }
-        if (possible_end[0] == '*' && possible_end[1] == ')') {
+
+        if (possible_end[0] == '(' && possible_end[1] == '*') {
+            comment_level++;
+        } else if (possible_end[0] == '*' && possible_end[1] == ')') {
             comment_level--;
         } else {
             // try to read 2 chars, if we didnt find the end it might have been partially consumed
             fseek(f, -1, SEEK_CUR);
         }
-    }
+    } while (comment_level > 0);
 }
 
 struct Token* lex_file(char* filename) {
@@ -100,12 +103,13 @@ struct Token* lex_file(char* filename) {
         char* tokenString = malloc(BUF_SIZE);
         int size = 0;
         bool in_string = false;
-        int comment_level = 0;
         while (size < BUF_SIZE - 2 && fread(tokenString + size, 1, 1, f) > 0) {
             size++;
             if (*(tokenString + size - 1) == '"') {
                 in_string ^= true;
-            } else if (size < BUF_SIZE - 3 && fread(tokenString + size, 1, 1, f) > 0) { // 1 char look ahead
+            } else if ((tokenString[0] == '(' || tokenString[0] == '<' || tokenString[0] == '-') 
+                    && (size < BUF_SIZE - 3 && fread(tokenString + size, 1, 1, f) > 0)) {  
+                // 1 char look ahead
                 size++;
                 tokenString[size] = '\0';
 
@@ -116,25 +120,24 @@ struct Token* lex_file(char* filename) {
                     size -= 2;
                     fseek(f, -2, SEEK_CUR);
                     consume_block_comment(f);
-                } else if (strcmp(tokenString + size  - 2, "*)") == 0) {
-                    comment_level--;
-                    if (comment_level == 0) break;
-                } else if (strcmp(tokenString + size - 2, "<-") == 0) {
+                }  else if (strcmp(tokenString + size - 2, "<-") == 0) {
                     break;
                 } else if (strcmp(tokenString + size - 2, "--") == 0) {
-                    size -= 2;
-                    while (fread(tokenString + size++, 1, 1, f) > 0) {
-                        size--; // ignore all of this because its a comment
+                    size-=2;
+                    // ignore the rest of the line due to the comment
+                    while (fread(tokenString + size, 1, 1, f) > 0) {
                         if (tokenString[size] == '\n') {
                             break;
                         }
                     }
+                    break;
+                    size--;
                 } else {
                     fseek(f, -1, SEEK_CUR);
                     size--;
                 }
 
-            } else if (comment_level > 0 || in_string) {
+            } else if (in_string) {
                 continue;
             } else if (!isalnum(*(tokenString + size - 1)) && *(tokenString + size - 1) != '_') {
                 if (size > 1) {
