@@ -1,0 +1,4 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/s19.test.cool"
+#2 ERROR (* illegal: unescaped newline *)
+"c
+d"

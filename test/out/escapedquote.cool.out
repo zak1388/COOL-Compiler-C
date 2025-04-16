@@ -1,0 +1,2 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/escapedquote.cool"
+#1 STRING "string with no closing quote\"

@@ -1,0 +1,4 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/null_in_string_followed_by_tokens.cl.cool"
+#1 ERROR (* null character in string *)
+"null character is here ->
+#1 '+'

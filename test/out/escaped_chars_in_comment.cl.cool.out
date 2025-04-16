@@ -1,0 +1,8 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/escaped_chars_in_comment.cl.cool"
+#1 ERROR (* 
+  (* \*) *\) 
+  abc 
+  \(* def (\* ghi  *)
+jkl
+*)
+mno

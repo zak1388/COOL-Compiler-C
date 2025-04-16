@@ -1,0 +1,3 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/s03.test.cool"
+#1 ERROR -- can they handle EOF in "--" state
+#1 ERROR ?

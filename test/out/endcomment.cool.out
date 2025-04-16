@@ -1,0 +1,2 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/endcomment.cool"
+#1 ERROR This comment was never begun *)

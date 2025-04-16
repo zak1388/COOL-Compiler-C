@@ -1,0 +1,4 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/wq0607-c3.cool"
+#2 ERROR (* Complicated sequence of strings and escaped quotes and errors *)
+
+"\\""\"\""\\""\"\\"\"\\"""\"\""\"

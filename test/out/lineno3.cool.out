@@ -1,0 +1,14 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/lineno3.cool"
+#1 ERROR (* first line
+(* second line
+-- third line
+*) fourth line
+*)
+-- sixth line
++
+abc
+-- ninth line
+(* tenth line
+*)
+DEF
+"string"

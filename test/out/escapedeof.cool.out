@@ -1,0 +1,2 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/escapedeof.cool"
+#2 ERROR "What happens if I escape an EOF? \

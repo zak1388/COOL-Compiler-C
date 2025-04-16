@@ -1,0 +1,4 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/null_in_code.cl.cool"
+#2 ERROR (* null character in code *)
+null character is here =>
+#2 ')'

@@ -1,0 +1,2 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/s14.test.cool"
+#2 ERROR token (** cmt *) token2  -- cmt2

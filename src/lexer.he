@@ -1,0 +1,180 @@
+#ifndef LEXER_h
+#define LEXER_h
+
+#define BUF_SIZE 1027
+
+enum TokenType {
+    /* Punctuation */
+    PERIOD,
+    COMMA,
+    AT,
+    SEMICOLON,
+    COLON,
+    CURLY_OPEN,
+    CURLY_CLOSE,
+    PARENT_OPEN,
+    PARENT_CLOSE,
+    PLUS_OPERATOR,
+    MINUS_OPERATOR,
+    MULT_OPERATOR,
+    DIV_OPERATOR,
+    INT_COMPLEMENT_OPERATOR,
+    LESS_OPERATOR,
+    LESS_EQ_OPERATOR,
+    EQ_OPERATOR,
+    ASSIGN_OPERATOR,
+    RIGHTARROW,
+
+    /* Decision */
+    IF,
+    THEN,
+    ELSE,
+    FI,
+    WHILE,
+    LOOP,
+    POOL,
+    CASE,
+    OF,
+    ESAC,
+
+    /* Keywords */
+    LET,
+    IN,
+    NEW,
+    ISVOID,
+    INHERITS,
+    CLAZZ,
+
+    /* Literals */
+    INTEGER,
+    TRUE,
+    FALSE,
+    STRING,
+
+    IDENTIFIER,
+
+    ERROR,
+    EOF,
+    TOKEN_COUNT,
+};
+
+char* TokenTypeMap[TOKEN_COUNT] = {
+    /* Punctuation */
+    [PERIOD] = ".",
+    [COMMA] = ",",
+    [AT] = "@",
+    [SEMICOLON] = ";",
+    [COLON] = ":",
+    [CURLY_OPEN] = "{",
+    [CURLY_CLOSE] = "}",
+    [PARENT_OPEN] = "(",
+    [PARENT_CLOSE] = ")",
+    [PLUS_OPERATOR] = "+",
+    [MINUS_OPERATOR] = "-",
+    [MULT_OPERATOR] = "*",
+    [DIV_OPERATOR] = "/",
+    [INT_COMPLEMENT_OPERATOR] = "~",
+    [LESS_OPERATOR] = "<",
+    [LESS_EQ_OPERATOR] = "<=",
+    [EQ_OPERATOR] = "=",
+    [ASSIGN_OPERATOR] = "<-",
+    [RIGHTARROW] = "=>",
+
+    /* [Decision] = "" */
+    [IF] = "if",
+    [THEN] = "then",
+    [ELSE] = "else",
+    [FI] = "fi",
+    [WHILE] = "while",
+    [LOOP] = "loop",
+    [POOL] = "pool",
+    [CASE] = "case",
+    [OF] = "of",
+    [ESAC] = "esac",
+
+    /* [Keywords] = "" */
+    [LET] = "let",
+    [IN] = "in",
+    [NEW] = "new",
+    [ISVOID] = "isvoid",
+    [INHERITS] = "inherits",
+    [CLAZZ] = "class",
+
+    /* Literals */
+    [TRUE] = "true",
+    [FALSE] = "false",
+    [INTEGER] = "\0",
+    [STRING] = "\0",
+
+    [IDENTIFIER] = "\0",
+
+    [ERROR] = "\0",
+    [EOF] = "\0",
+};
+
+char* TokenNames[TOKEN_COUNT] = {
+    /* Punctuation */
+    [PERIOD] = "PERIOD",
+    [COMMA] = "COMMA",
+    [AT] = "AT",
+    [SEMICOLON] = "SEMICOLON",
+    [COLON] = "COLON",
+    [CURLY_OPEN] = "CURLY_OPEN",
+    [CURLY_CLOSE] = "CURLY_CLOSE",
+    [PARENT_OPEN] = "PARENT_OPEN",
+    [PARENT_CLOSE] = "PARENT_CLOSE",
+    [PLUS_OPERATOR] = "PLUS_OPERATOR",
+    [MINUS_OPERATOR] = "MINUS_OPERATOR",
+    [MULT_OPERATOR] = "MULT_OPERATOR",
+    [DIV_OPERATOR] = "DIV_OPERATOR",
+    [INT_COMPLEMENT_OPERATOR] = "INT_COMPLEMENT_OPERATOR",
+    [LESS_OPERATOR] = "LESS_OPERATOR",
+    [LESS_EQ_OPERATOR] = "LESS_EQ_OPERATOR",
+    [EQ_OPERATOR] = "EQ_OPERATOR",
+    [ASSIGN_OPERATOR] = "ASSIGN_OPERATOR",
+    [RIGHTARROW] = "RIGHTARROW",
+
+    /* Decision */
+    [IF] = "IF",
+    [THEN] = "THEN",
+    [ELSE] = "ELSE",
+    [FI] = "FI",
+    [WHILE] = "WHILE",
+    [LOOP] = "LOOP",
+    [POOL] = "POOL",
+    [CASE] = "CASE",
+    [OF] = "OF",
+    [ESAC] = "ESAC",
+
+    /* Keywords */
+    [LET] = "LET",
+    [IN] = "IN",
+    [NEW] = "NEW",
+    [ISVOID] = "ISVOID",
+    [INHERITS] = "INHERITS",
+    [CLAZZ] = "CLAZZ",
+
+    /* Literals */
+    [INTEGER] = "INTEGER",
+    [TRUE] = "TRUE",
+    [FALSE] = "FALSE",
+    [STRING] = "STRING",
+
+    [IDENTIFIER] = "IDENTIFIER",
+
+    [ERROR] = "ERROR",
+    [EOF] = "EOF",
+};
+
+struct Token {
+    enum TokenType type;
+    unsigned int line;
+    char* file_name;
+    union {
+        char asString[1024];
+        int asInt;
+    } data;
+    struct Token* next;
+};
+
+#endif // LEXER_h

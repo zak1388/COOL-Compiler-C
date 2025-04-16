@@ -1,0 +1,8 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/s33.test.cool"
+#1 ERROR (* test an unterminated comment *)
+
+before_the_comment
+
+(* this
+ * won't
+ * end

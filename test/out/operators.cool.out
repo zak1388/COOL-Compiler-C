@@ -1,0 +1,14 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/operators.cool"
+#3 ERROR (* some operators *)
+;{}(,):@.+-*/~ < = <- => <=
+
+(* should be < and <= *)
+<<=
+
+(* should be <= and = *)
+<==
+
+(* should be <= and => *)
+<==>
+
+<<-

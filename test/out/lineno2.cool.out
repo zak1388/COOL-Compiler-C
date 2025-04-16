@@ -1,0 +1,8 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/lineno2.cool"
+#1 ERROR (* jfkds;ajfkdl;a (* "
+
+" *) fdjsk;ajs
+*)
+!
+fjdk
+""

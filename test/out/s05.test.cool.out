@@ -1,0 +1,2 @@
+#name "../../ECS652U-cw-group1/testsuite/lexer/s05.test.cool"
+#1 STRING "other unescaped whitespace: 	"
