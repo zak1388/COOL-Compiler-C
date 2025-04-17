@@ -11,9 +11,10 @@ enum TokenType TokenTypeOfString(int size, char tokenString[size]) {
         return ERROR;
     }
 
-    /* Punctuation */
+
+    /* Try to match things exactly */
     for (int i = 0; i < TOKEN_COUNT; i++) {
-        if (strcasecmp(tokenString, TokenTypeMap[i]) == 0) {
+        if (size == (int) strlen(TokenTypeMap[i]) && strncasecmp(tokenString, TokenTypeMap[i], size) == 0) {
             return i;
         }
     }
@@ -21,7 +22,7 @@ enum TokenType TokenTypeOfString(int size, char tokenString[size]) {
     /* Literals */
     bool isInt = true;
     bool isString = tokenString[0] == '"' && tokenString[size - 1] == '"';
-    bool isBool = islower(tokenString[0]) && (strcasecmp(tokenString, "true") == 0 || strcasecmp(tokenString, "false") == 0);
+    bool isBool = islower(tokenString[0]) && (strncasecmp(tokenString, "true", size) == 0 || strncasecmp(tokenString, "false", size) == 0);
     bool isObjId = islower(tokenString[0]) && isalpha(tokenString[0]);
     bool isTypeId = isupper(tokenString[0]) && isalpha(tokenString[0]);
     for (int i = 0; i < size; i++) {
@@ -37,7 +38,7 @@ enum TokenType TokenTypeOfString(int size, char tokenString[size]) {
         isTypeId &= isalnum(tokenString[i]) || tokenString[i] == '_';
     }
 
-    if (isInt) return INTEGER;
+    if (isInt) return INT_CONST;
     else if (isString) return STRING;
     else if (isBool) {
         for (int i = 0; i < size; i++) tokenString[i] = tolower(tokenString[i]);
@@ -68,12 +69,16 @@ int coolStringLength(struct Token* t) {
     return length - 2; // ignore quotes
 }
 
-void consume_block_comment(FILE* f) {
+void consume_block_comment(FILE* f, int *line) {
     int comment_level = 0;
     char possible_end[3] = {0};
     do {
-        if (fread(possible_end, 1, 2, f) < 2) {
+        if ((possible_end[0] = getc(f)) == EOF || ((possible_end[1] = getc(f)) == EOF)) {
             break;
+        }
+
+        if (possible_end[0] == '\n') {
+            (*line)++;
         }
 
         if (possible_end[0] == '(' && possible_end[1] == '*') {
@@ -101,49 +106,79 @@ struct Token* lex_file(char* filename) {
     int line = 1;
     while (!reached_eof) {
         char* tokenString = malloc(BUF_SIZE);
+        if (tokenString == NULL) {
+            fprintf(stderr, "Failed to allocate memory in %s:%d\n", __FILE__, __LINE__);
+            exit(1);
+        }
         int size = 0;
         bool in_string = false;
-        while (size < BUF_SIZE - 2 && fread(tokenString + size, 1, 1, f) > 0) {
+        struct Token* t = malloc(sizeof(struct Token));
+        while (size < BUF_SIZE - 2 && (tokenString[size] = getc(f)) != EOF) {
             size++;
-            if (*(tokenString + size - 1) == '"') {
-                in_string ^= true;
-            } else if ((tokenString[0] == '(' || tokenString[0] == '<' || tokenString[0] == '-') 
-                    && (size < BUF_SIZE - 3 && fread(tokenString + size, 1, 1, f) > 0)) {  
-                // 1 char look ahead
-                size++;
-                tokenString[size] = '\0';
 
-                // printf("tokenString - 2 in lookahead: \"%s\"\n", tokenString + size - 2);
-                // printf("\tstrcmp for \"*)\"? %s\n", strcmp(tokenString + size - 2, "*)") == 0? "true" : "false");
-
-                if (strcmp(tokenString + size - 2, "(*") == 0) {
-                    size -= 2;
-                    fseek(f, -2, SEEK_CUR);
-                    consume_block_comment(f);
-                }  else if (strcmp(tokenString + size - 2, "<-") == 0) {
-                    break;
-                } else if (strcmp(tokenString + size - 2, "--") == 0) {
-                    size-=2;
-                    // ignore the rest of the line due to the comment
-                    while (fread(tokenString + size, 1, 1, f) > 0) {
-                        if (tokenString[size] == '\n') {
-                            break;
-                        }
-                    }
-                    break;
-                    size--;
-                } else {
-                    fseek(f, -1, SEEK_CUR);
-                    size--;
+            if (size == 1 && isspace(tokenString[0])) {
+                // skip leading whitespace
+                if (tokenString[0] == '\n') {
+                    line++;
                 }
-
-            } else if (in_string) {
+                size--;
                 continue;
-            } else if (!isalnum(*(tokenString + size - 1)) && *(tokenString + size - 1) != '_') {
-                if (size > 1) {
+            } 
+
+            if (size > 0 && tokenString[size - 1] == '"') {
+                // entering a string const
+                in_string ^= true;
+            } else if (in_string) {
+                // cannot stop if we're in string
+                continue;
+            } 
+
+            // consume line comments
+            if (size > 0 && tokenString[size - 1] == '-') {
+                if  ((tokenString[size] = getc(f)) == '-') {
+                    char c;
                     size--;
-                    fseek(f, -1, SEEK_CUR);
+                    do {
+                        c = getc(f);
+                    } while (c != '\n' && c != EOF);
+                    line++;
+                    continue;
+                } else {
+                    ungetc(tokenString[size], f);
                 }
+            } 
+
+            if ((t->type = TokenTypeOfString(size, tokenString)) != ERROR) {
+                // double check that this isnt a block comment
+                if (t->type == PARENT_OPEN) {
+                    if ((tokenString[size] = getc(f)) != EOF
+                            && tokenString[size] == '*') {
+                        ungetc(tokenString[size], f);
+                        size--;
+                        ungetc(tokenString[size], f);
+                        consume_block_comment(f, &line);
+                        continue;
+                    } else {
+                        ungetc(tokenString[size], f);
+                    }
+                } 
+                bool isIdentifierLike = isalpha(tokenString[0]); 
+                printf("isIdentifierLike %s\n", isIdentifierLike? "true" : "false");
+                for (int i = 1; i < size; i++) {
+                    isIdentifierLike &= isalnum(tokenString[i]) || tokenString[i] == '_';
+                }
+                if (isIdentifierLike) {
+                    // if its an identifier keep going until theres no more identifier
+                    tokenString[size] = getc(f);
+                    bool can_read_more = isalnum(tokenString[size]) || tokenString[size] == '_';
+                    ungetc(tokenString[size], f);
+                    if (can_read_more) {
+                        continue;
+                    }
+                }
+
+
+                // stop because we matched the type of a token
                 break;
             }
         };
@@ -153,31 +188,15 @@ struct Token* lex_file(char* filename) {
             break;
         }
 
-        // trim
-        char *new_start = tokenString;
-        while (size >= 1 && isspace(tokenString[0])) {
-            if (tokenString[0] == '\n') line++;
-            size--;
-            new_start++;
-        }
-        while (size >= 1 && isspace(tokenString[size - 1])) {
-            if (tokenString[size - 1] == '\n') line++;
-            size--;
-        }
-
         // skip over sections of just whitespace
         if (size == 0 || (size == 1 && isspace(tokenString[0]))) {
             continue;
         } 
 
-
         tokenString[size] = '\0';
-
-        struct Token* t = malloc(sizeof(struct Token));
-        t->type = TokenTypeOfString(size, new_start);
         t->file_name = filename;
         t->line = line;
-        strncpy(t->data, new_start, BUF_SIZE);
+        strncpy(t->data, tokenString, BUF_SIZE);
         free(tokenString);
 
         if (first == NULL) {
@@ -231,14 +250,14 @@ int main(int argc, char* argv[argc]) {
             case OBJECTID: 
             case TYPEID:
             case STRING:
-            case INTEGER:
+            case INT_CONST:
                 printf(" %s\n", t1->data);
                 break;
             
             default: printf("\n");
         }
 
-        struct Token* old = t1;
+        // struct Token* old = t1;
         t1 = t1->next;
         // free(old);
     }

@@ -46,7 +46,7 @@ enum TokenType {
     CLAZZ,
 
     /* Literals */
-    INTEGER,
+    INT_CONST,
     BOOL_CONST,
     STRING,
 
@@ -102,7 +102,7 @@ char* TokenTypeMap[TOKEN_COUNT] = {
 
     /* Literals */
     [BOOL_CONST] = "BOOL_CONST",
-    [INTEGER] = "INTEGER",
+    [INT_CONST] = "INT_CONST",
     [STRING] = "STRING",
 
     [TYPEID] = "TYPEID",
@@ -156,7 +156,7 @@ char* TokenNames[TOKEN_COUNT] = {
 
     /* Literals */
     [BOOL_CONST] = "BOOL_CONST",
-    [INTEGER] = "INTEGER",
+    [INT_CONST] = "INT_CONST",
     [STRING] = "STRING",
 
     [TYPEID] = "TYPEID",
