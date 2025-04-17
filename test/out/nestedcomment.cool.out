@@ -1,5 +1,0 @@
-#name "../../ECS652U-cw-group1/testsuite/lexer/nestedcomment.cool"
-#1 ERROR (* XXX (* XXX *) XXX *) 
-(* XXX (* YYY *)
-(* ZZZ *) XXX *
-#1 ')'

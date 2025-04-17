@@ -1,13 +1,0 @@
-#name "../../ECS652U-cw-group1/testsuite/lexer/s04.test.cool"
-#1 ERROR (* various forms of whitespace *)
-0
-        (* blanks *)
-1
-      (* formfeed *)
-2
-      (* carriage return *)
-3
-	(* tab *)
-4
-      (* vertical tab *)
-5

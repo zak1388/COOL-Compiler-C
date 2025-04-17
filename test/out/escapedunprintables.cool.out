@@ -1,6 +1,0 @@
-#name "../../ECS652U-cw-group1/testsuite/lexer/escapedunprintables.cool"
-#1 STRING "This is a tab:\	"
-"This is a backspace:\"
-"This is a formfeed:\"
-"This is a carriage return:"
-"This is an escape:"

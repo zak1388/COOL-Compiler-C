@@ -1,3 +1,0 @@
-#name "../../ECS652U-cw-group1/testsuite/lexer/null_in_string.cl.cool"
-#1 ERROR (* null character in string *)
-"null character is here ->

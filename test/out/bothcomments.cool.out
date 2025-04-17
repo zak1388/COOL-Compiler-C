@@ -1,5 +1,0 @@
-#name "../../ECS652U-cw-group1/testsuite/lexer/bothcomments.cool"
-#1 ERROR -- (* This isn't
-what the programmer thought it was *) 
-.
-(* -- neither is this *) if 5 then
