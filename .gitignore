@@ -3,3 +3,4 @@ build/*
 *.ce
 *.he
 test/out
+test/results
